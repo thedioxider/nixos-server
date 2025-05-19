@@ -48,12 +48,28 @@
     enable = true;
     ports = [ 22 ];
     settings = {
+      AllowUsers = [ "root" "dio" "share" ];
       PasswordAuthentication = false;
-      AllowUsers = [ "root" "dio" ];
+      ChallengeResponseAuthentication = false;
       PermitRootLogin =
         "forced-commands-only"; # "yes", "without-password", "prohibit-password", "forced-commands-only", "no"
+      TCPKeepAlive = true;
+      ClientAliveInterval = 60;
+      ClientAliveCountMax = 60;
     };
+    extraConfig = ''
+      Subsystem sftp internal-sftp -u 0002
+      Match User share
+        PasswordAuthentication yes
+        ChallengeResponseAuthentication yes
+        ChrootDirectory /share
+        ForceCommand internal-sftp -d /files
+        AllowTcpForwarding no
+        PermitTunnel no
+        X11Forwarding no
+    '';
   };
+  security.pam.services.sshd.unixAuth = pkgs.lib.mkForce true;
 
   ### Users & Groups
   users.users.root.openssh.authorizedKeys.keys = [
@@ -61,17 +77,43 @@
   ];
 
   users.groups.nixos.members = [ "root" "dio" ];
+  users.groups.share = { };
 
-  users.users.dio = {
-    description = "Demetrius R.";
-    isNormalUser = true;
-    uid = 1134;
-    initialHashedPassword =
-      "$y$j9T$mH5EZb/OBF8ACbwFGIEHa1$5Cw0t9dqll73lpN2vATJU9RW03/MWlPs.PwpgrZd0m0";
-    useDefaultShell = false;
-    shell = pkgs.fish;
-    extraGroups = [ "wheel" ];
-    packages = with pkgs; [ ];
+  users.users = {
+    dio = {
+      description = "Demetrius R.";
+      isNormalUser = true;
+      uid = 1134;
+      initialHashedPassword =
+        "$y$j9T$mH5EZb/OBF8ACbwFGIEHa1$5Cw0t9dqll73lpN2vATJU9RW03/MWlPs.PwpgrZd0m0";
+      useDefaultShell = false;
+      shell = pkgs.fish;
+      extraGroups = [ "wheel" ];
+      packages = with pkgs; [ ];
+    };
+
+    share = {
+      description = "Share files and leave something good";
+      isNormalUser = true;
+      group = "share";
+      hashedPassword =
+        "$y$j9T$9ISDrRxqstIQpxJVYym761$siuHijPXpf2ccGmSdqyOUfeusNc9JxvQZtMbm61Se2D";
+      useDefaultShell = false;
+      shell = pkgs.fish;
+    };
+  };
+
+  systemd.tmpfiles.settings."10-share" = {
+    "/share".d = {
+      user = "root";
+      group = "users";
+      mode = "0751";
+    };
+    "/share/files".d = {
+      user = "share";
+      group = "share";
+      mode = "0777";
+    };
   };
 
   #
