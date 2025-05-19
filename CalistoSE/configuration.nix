@@ -44,7 +44,16 @@
   time.timeZone = "Europe/Moscow";
 
   # enable the OpenSSH daemon
-  services.openssh = { enable = true; };
+  services.openssh = {
+    enable = true;
+    ports = [ 22 ];
+    settings = {
+      PasswordAuthentication = false;
+      AllowUsers = [ "root" "dio" ];
+      PermitRootLogin =
+        "forced-commands-only"; # "yes", "without-password", "prohibit-password", "forced-commands-only", "no"
+    };
+  };
 
   ### Users & Groups
   users.users.root.openssh.authorizedKeys.keys = [
