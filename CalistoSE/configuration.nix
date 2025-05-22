@@ -58,8 +58,6 @@
       ClientAliveCountMax = 60;
     };
     extraConfig = ''
-      Match User amnezia
-        PasswordAuthentication yes
       Subsystem sftp internal-sftp -u 0002
       Match User share
         PasswordAuthentication yes
@@ -109,6 +107,7 @@
       isNormalUser = true;
       initialHashedPassword =
         "$y$j9T$Jc6SKfe3kHBJs3C0elMhc.$hO2C2gGFBsKbAsIBDMtoAmEiMcsV9W.s5OT/LxTepYD";
+      extraGroups = [ "wheel" ];
     };
   };
 
