@@ -101,6 +101,13 @@
       useDefaultShell = false;
       shell = pkgs.fish;
     };
+
+    amnezia = {
+      description = "Amnezia";
+      isNormalUser = true;
+      initialHashedPassword =
+        "$y$j9T$Jc6SKfe3kHBJs3C0elMhc.$hO2C2gGFBsKbAsIBDMtoAmEiMcsV9W.s5OT/LxTepYD";
+    };
   };
 
   systemd.tmpfiles.settings."10-share" = {
