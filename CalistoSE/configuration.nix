@@ -48,7 +48,7 @@
     enable = true;
     ports = [ 22 ];
     settings = {
-      AllowUsers = [ "root" "dio" "share" ];
+      AllowUsers = [ "root" "dio" "share" "amnezia" ];
       PasswordAuthentication = false;
       ChallengeResponseAuthentication = false;
       PermitRootLogin =
@@ -58,6 +58,8 @@
       ClientAliveCountMax = 60;
     };
     extraConfig = ''
+      Match User amnezia
+        PasswordAuthentication yes
       Subsystem sftp internal-sftp -u 0002
       Match User share
         PasswordAuthentication yes
