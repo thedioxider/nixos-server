@@ -9,6 +9,9 @@
     ### Programs, Services & Environment
     ./env.nix
 
+    ### Power management & Sleep configs
+    ./power.nix
+
     ### Plasma Desktop
     ./plasma.nix
   ];
