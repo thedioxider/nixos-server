@@ -22,7 +22,7 @@
   ### NixOS special options
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nixpkgs.config.allowUnfreePredicate = pkg:
-    builtins.elem (lib.getName pkg) [ ];
+    builtins.elem (lib.getName pkg) [ "zerotierone" ];
   nix.gc = {
     automatic = true;
     dates = "weekly";
