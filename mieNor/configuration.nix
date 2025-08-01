@@ -8,6 +8,9 @@
 
     ### Programs, Services & Environment
     ./env.nix
+
+    ### Plasma Desktop
+    ./plasma.nix
   ];
 
   ### NixOS special options
