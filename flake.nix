@@ -32,5 +32,20 @@
         ./CalistoSE/configuration.nix
       ];
     };
+
+    nixosConfigurations."mieNor" = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      specialArgs = { inherit inputs; };
+      modules = [
+        {
+          networking.hostName = "mieNor";
+
+          # enable the OpenSSH daemon
+          services.openssh = { enable = true; };
+        }
+
+        ./mieNor/configuration.nix
+      ];
+    };
   };
 }
