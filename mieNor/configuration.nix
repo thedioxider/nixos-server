@@ -12,6 +12,9 @@
     ### Power management & Sleep configs
     ./power.nix
 
+    ### Network
+    ./network.nix
+
     ### Plasma Desktop
     ./plasma.nix
   ];
