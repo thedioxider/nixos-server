@@ -3,7 +3,7 @@
 
   ### Power management utilities
   # services.thermald.enable = true;
-  services.auto-cpufreq.enable = true;
+  # services.auto-cpufreq.enable = true;
 
   systemd.sleep.extraConfig = ''
     AllowSuspend=no

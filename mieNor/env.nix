@@ -12,6 +12,7 @@
       defaultEditor = true;
     };
     yazi.enable = true;
+    firefox.enable = true;
   };
 
   services = { };
