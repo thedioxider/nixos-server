@@ -26,6 +26,7 @@
     trashy
     p7zip
     vim
+    jq
   ];
 
   environment.variables = { EDITOR = "nvim"; };

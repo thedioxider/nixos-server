@@ -27,11 +27,14 @@
 
   ### Boot
   boot.loader = {
-    efi = { efiSysMountPoint = "/efi"; };
+    efi = {
+      canTouchEfiVariables = true;
+      efiSysMountPoint = "/efi";
+    };
     grub = {
       enable = true;
       efiSupport = true;
-      efiInstallAsRemovable = true;
+      device = "nodev";
     };
   };
 
