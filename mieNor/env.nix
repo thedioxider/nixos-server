@@ -17,6 +17,14 @@
 
   services = { };
 
+  virtualisation.docker = {
+    enable = true;
+    rootless = {
+      enable = true;
+      setSocketVariable = true;
+    };
+  };
+
   environment.shellAliases = { };
 
   environment.systemPackages = with pkgs; [

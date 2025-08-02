@@ -57,7 +57,7 @@
     enable = true;
     ports = [ 22 ];
     settings = {
-      AllowUsers = [ "root" "dio" "share" "amnezia" ];
+      AllowUsers = [ "root" "dio" "share" "servant" ];
       PasswordAuthentication = false;
       ChallengeResponseAuthentication = false;
       PermitRootLogin =
@@ -67,6 +67,10 @@
       ClientAliveCountMax = 60;
     };
     extraConfig = ''
+      Match User servant
+        PasswordAuthentication yes
+      Match All
+
       Subsystem sftp internal-sftp -u 0002
       Match User share
         PasswordAuthentication yes
@@ -86,8 +90,23 @@
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAKHF6abqEUyjJGM4oCSq6i7aFnQyzvHb+flLb/Y4tlE"
   ];
 
-  users.groups.nixos.members = [ "root" "dio" ];
+  security.sudo = {
+    enable = true;
+    extraRules = [
+      {
+        groups = [ "wheel" ];
+        commands = [ "ALL" ];
+      }
+      {
+        users = [ "servant" ];
+        commands = [ ];
+      }
+    ];
+  };
+
+  users.groups.nixos.members = [ "root" ];
   users.groups.share = { };
+  users.groups.server = { };
 
   users.users = {
     dio = {
@@ -98,8 +117,11 @@
         "$y$j9T$mH5EZb/OBF8ACbwFGIEHa1$5Cw0t9dqll73lpN2vATJU9RW03/MWlPs.PwpgrZd0m0";
       useDefaultShell = false;
       shell = pkgs.fish;
-      extraGroups = [ "wheel" ];
+      extraGroups = [ "wheel" "nixos" "server" "share" ];
       packages = with pkgs; [ ];
+      openssh.authorizedKeys.keys = [
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAKHF6abqEUyjJGM4oCSq6i7aFnQyzvHb+flLb/Y4tlE"
+      ];
     };
 
     share = {
@@ -112,12 +134,17 @@
       shell = pkgs.fish;
     };
 
-    amnezia = {
-      description = "Amnezia";
+    servant = {
+      description = "Servant";
       isNormalUser = true;
-      hashedPassword =
-        "$y$j9T$geZ5r24UA3IU.D1TQscJP.$1IScpCuHr.nFja7ARYgbzXDxSc9fKL/vov0ieq.NOH4";
-      extraGroups = [ "wheel" ];
+      group = "server";
+      linger = true;
+      initialHashedPassword =
+        "$y$j9T$sQvFPjOrPVeqhHBxvkkl.0$5byFGm57xvjlNPGpX/MNmggXkDiLDnfs0.7.5.EORFD";
+      home = "/server";
+      useDefaultShell = false;
+      shell = pkgs.fish;
+      extraGroups = [ "docker" ];
     };
   };
 
@@ -131,6 +158,11 @@
       user = "share";
       group = "share";
       mode = "0777";
+    };
+    "/server".d = {
+      user = "servant";
+      group = "server";
+      mode = "0771";
     };
   };
 
