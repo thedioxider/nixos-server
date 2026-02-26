@@ -36,6 +36,11 @@
     p7zip
     vim
     jq
+    amneziawg-go
+    amneziawg-tools
+    lighttpd
+    maliit-framework
+    maliit-keyboard
   ];
 
   environment.variables = { EDITOR = "nvim"; };
