@@ -1,13 +1,14 @@
 { config, lib, pkgs, ... }: {
-  imports = [ ./amneziawg.nix ];
+  imports = [ ./vpn.nix ];
 
   boot.extraModulePackages = with config.boot.kernelPackages; [ amneziawg ];
 
   services = {
-    zerotierone = {
-      enable = true;
-      joinNetworks = [ "d5e5fb65370f636a" ];
-    };
+    # zerotierone = {
+    #   enable = true;
+    #   joinNetworks = [ "d5e5fb65370f636a" ];
+    # };
+    resolved.enable = true;
   };
 
   networking.networkmanager.enable = true;
