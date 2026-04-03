@@ -1,4 +1,6 @@
-{ config, lib, pkgs, ... }: {
+{ config, lib, pkgs, ... }:
+let watchdogIp = "10.42.42.3";
+in {
   networking.wg-quick.interfaces.dmnt = {
     type = "amneziawg";
     configFile = "/etc/secrets/dmnt.awg.conf";
@@ -15,9 +17,9 @@
     };
     script = ''
       STATE_FILE="/var/lib/dmnt-watchdog/failures"
-      THRESHOLD=5
+      THRESHOLD=15
 
-      if ping -c 1 -W 5 -I dmnt 10.42.42.3 &>/dev/null; then
+      if ping -c 1 -W 10 -I dmnt ${watchdogIp} &>/dev/null; then
         echo 0 > "$STATE_FILE"
       else
         FAILURES=$(cat "$STATE_FILE" 2>/dev/null || echo 0)
