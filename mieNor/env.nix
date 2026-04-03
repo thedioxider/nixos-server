@@ -13,6 +13,8 @@
     };
     yazi.enable = true;
     firefox.enable = true;
+    npm.enable = true;
+    java.enable = true;
   };
 
   services = { };
@@ -36,6 +38,8 @@
     p7zip
     vim
     jq
+    zip
+    unzip
     amneziawg-go
     amneziawg-tools
     lighttpd
