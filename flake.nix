@@ -2,7 +2,8 @@
   description = "A flake that supposed to set up a server";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs.url = "nixpkgs/nixos-25.11";
+    nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -21,6 +22,15 @@
       system = "x86_64-linux";
       specialArgs = { inherit inputs; };
       modules = [
+        {
+          nixpkgs.overlays = [
+            (self: super: {
+              unstable = import inputs.nixpkgs-unstable {
+                inherit (self.stdenv.hostPlatform) system;
+              };
+            })
+          ];
+        }
         disko.nixosModules.disko
         {
           networking.hostName = "CalistoSE";
@@ -37,6 +47,15 @@
       system = "x86_64-linux";
       specialArgs = { inherit inputs; };
       modules = [
+        {
+          nixpkgs.overlays = [
+            (self: super: rec {
+              unstable = import inputs.nixpkgs-unstable {
+                inherit (self.stdenv.hostPlatform) system;
+              };
+            })
+          ];
+        }
         {
           networking.hostName = "mieNor";
 

@@ -1,4 +1,5 @@
-{ lib, pkgs, ... }: {
+{ lib, pkgs, ... }:
+{
   imports = [ ];
 
   ### Programs, Services & Environment
@@ -29,23 +30,28 @@
 
   environment.shellAliases = { };
 
-  environment.systemPackages = with pkgs; [
-    gcc
-    age
-    ssh-to-age
-    sops
-    trashy
-    p7zip
-    vim
-    jq
-    zip
-    unzip
-    amneziawg-go
-    amneziawg-tools
-    lighttpd
-    maliit-framework
-    maliit-keyboard
-  ];
+  environment.systemPackages =
+    (with pkgs; [
+      gcc
+      age
+      ssh-to-age
+      sops
+      trashy
+      p7zip
+      vim
+      jq
+      zip
+      unzip
+      lighttpd
+      maliit-framework
+      maliit-keyboard
+    ])
+    ++ (with pkgs.unstable; [
+      amneziawg-go
+      amneziawg-tools
+    ]);
 
-  environment.variables = { EDITOR = "nvim"; };
+  environment.variables = {
+    EDITOR = "nvim";
+  };
 }
