@@ -1,16 +1,53 @@
-{ config, lib, pkgs, ... }:
-let watchdogIp = "10.42.42.3";
-in {
-  networking.wg-quick.interfaces.dmnt = {
-    type = "amneziawg";
-    configFile = "/etc/secrets/dmnt.awg.conf";
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  watchdogIp = "10.42.42.3";
+  awgConfigFile = "/etc/secrets/dmnt.conf";
+  awgEnv = {
+    WG_QUICK_USERSPACE_IMPLEMENTATION = "amneziawg-go";
+  };
+  awgPath = [
+    pkgs.unstable.amneziawg-tools
+    pkgs.unstable.amneziawg-go
+    pkgs.iptables
+    pkgs.iproute2
+  ];
+in
+{
+  # Userspace AmneziaWG — avoids kernel module crash on 6.12.x
+  # (jp_spec_applymods page fault during handshake)
+  systemd.services.awg-dmnt = {
+    description = "AmneziaWG tunnel (userspace) - dmnt";
+    after = [ "network-online.target" ];
+    requires = [ "network-online.target" ];
+    wantedBy = [ "multi-user.target" ];
+    path = awgPath;
+    environment = awgEnv;
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    script = ''
+      awg-quick up ${awgConfigFile}
+    '';
+    preStop = ''
+      awg-quick down ${awgConfigFile}
+    '';
   };
 
   # AmneziaWG tunnel watchdog
   systemd.services.dmnt-watchdog = {
     description = "AmneziaWG tunnel watchdog";
-    after = [ "wg-quick-dmnt.service" ];
-    path = [ pkgs.iputils pkgs.coreutils ];
+    after = [ "awg-dmnt.service" ];
+    path = [
+      pkgs.iputils
+      pkgs.coreutils
+      pkgs.systemd
+    ];
     serviceConfig = {
       Type = "oneshot";
       StateDirectory = "dmnt-watchdog";
@@ -28,7 +65,7 @@ in {
 
         if [ "$FAILURES" -ge "$THRESHOLD" ]; then
           echo "Tunnel unreachable for $FAILURES checks, restarting..."
-          systemctl restart wg-quick-dmnt.service
+          systemctl restart awg-dmnt.service
           echo 0 > "$STATE_FILE"
         fi
       fi
