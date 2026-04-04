@@ -18,8 +18,9 @@ let
   ];
 in
 {
-  # Userspace AmneziaWG — avoids kernel module crash on 6.12.x
-  # (jp_spec_applymods page fault during handshake)
+  # Blacklist kernel module — crashes on 6.12.x (jp_spec_applymods page fault)
+  # Forces awg-quick to use amneziawg-go userspace implementation instead
+  boot.blacklistedKernelModules = [ "amneziawg" ];
   systemd.services.awg-dmnt = {
     description = "AmneziaWG tunnel (userspace) - dmnt";
     after = [ "network-online.target" ];
