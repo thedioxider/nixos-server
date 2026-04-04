@@ -1,6 +1,6 @@
 { pkgs, ... }:
 let
-  watchdogIp = "10.42.42.3";
+  watchdogIp = "10.8.1.9";
   awgConfigFile = "/etc/secrets/dmnt.conf";
   awgPath = [
     pkgs.unstable.amneziawg-tools
