@@ -1,15 +1,7 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
+{ pkgs, ... }:
 let
   watchdogIp = "10.42.42.3";
   awgConfigFile = "/etc/secrets/dmnt.conf";
-  awgEnv = {
-    WG_QUICK_USERSPACE_IMPLEMENTATION = "amneziawg-go";
-  };
   awgPath = [
     pkgs.unstable.amneziawg-tools
     pkgs.unstable.amneziawg-go
@@ -27,7 +19,6 @@ in
     requires = [ "network-online.target" ];
     wantedBy = [ "multi-user.target" ];
     path = awgPath;
-    environment = awgEnv;
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
