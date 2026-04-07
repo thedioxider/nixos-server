@@ -47,6 +47,7 @@
       maliit-keyboard
     ])
     ++ (with pkgs.unstable; [
+      lazygit
       amneziawg-go
       amneziawg-tools
     ]);
