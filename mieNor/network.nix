@@ -9,6 +9,10 @@
     #   joinNetworks = [ "d5e5fb65370f636a" ];
     # };
     resolved.enable = true;
+    v2raya = {
+      enable = true;
+      cliPackage = pkgs.xray;
+    };
   };
 
   networking.networkmanager.enable = true;
