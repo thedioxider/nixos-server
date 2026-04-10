@@ -1,4 +1,11 @@
-{ modulesPath, config, lib, pkgs, ... }: {
+{
+  modulesPath,
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+{
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     (modulesPath + "/profiles/qemu-guest.nix")
@@ -17,12 +24,17 @@
 
     ### Plasma Desktop
     ./plasma.nix
+
+    ### File directories
+    ./files.nix
   ];
 
   ### NixOS special options
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  nixpkgs.config.allowUnfreePredicate = pkg:
-    builtins.elem (lib.getName pkg) [ "zerotierone" ];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
+  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "zerotierone" ];
   nix.gc = {
     automatic = true;
     dates = "weekly";
@@ -57,17 +69,22 @@
     enable = true;
     ports = [ 22 ];
     settings = {
-      AllowUsers = [ "root" "dio" "share" "servant" "sholdue" ];
+      AllowUsers = [
+        "root"
+        "dio"
+        "share"
+        "servant"
+        "sholdue"
+      ];
       PasswordAuthentication = false;
       ChallengeResponseAuthentication = false;
-      PermitRootLogin =
-        "forced-commands-only"; # "yes", "without-password", "prohibit-password", "forced-commands-only", "no"
+      PermitRootLogin = "forced-commands-only"; # "yes", "without-password", "prohibit-password", "forced-commands-only", "no"
       TCPKeepAlive = true;
       ClientAliveInterval = 60;
       ClientAliveCountMax = 60;
     };
     extraConfig = ''
-      Match User servant,sholdue
+      Match User sholdue
         PasswordAuthentication yes
       Match All
 
@@ -106,9 +123,7 @@
 
   users.groups = {
     nixos.members = [ "root" ];
-    share = { };
-    server = { };
-    data = { };
+    server.members = [ "root" ];
   };
 
   users.users = {
@@ -116,11 +131,16 @@
       description = "Demetrius R.";
       isNormalUser = true;
       uid = 1134;
-      initialHashedPassword =
-        "$y$j9T$mH5EZb/OBF8ACbwFGIEHa1$5Cw0t9dqll73lpN2vATJU9RW03/MWlPs.PwpgrZd0m0";
+      initialHashedPassword = "$y$j9T$mH5EZb/OBF8ACbwFGIEHa1$5Cw0t9dqll73lpN2vATJU9RW03/MWlPs.PwpgrZd0m0";
       useDefaultShell = false;
       shell = pkgs.fish;
-      extraGroups = [ "wheel" "nixos" "server" "data" "share" ];
+      extraGroups = [
+        "wheel"
+        "nixos"
+        "server"
+        "data"
+        "share"
+      ];
       packages = with pkgs; [ ];
       openssh.authorizedKeys.keys = [
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAKHF6abqEUyjJGM4oCSq6i7aFnQyzvHb+flLb/Y4tlE"
@@ -131,8 +151,7 @@
       description = "Share files and leave something good";
       isNormalUser = true;
       group = "share";
-      hashedPassword =
-        "$y$j9T$9ISDrRxqstIQpxJVYym761$siuHijPXpf2ccGmSdqyOUfeusNc9JxvQZtMbm61Se2D";
+      hashedPassword = "$y$j9T$9ISDrRxqstIQpxJVYym761$siuHijPXpf2ccGmSdqyOUfeusNc9JxvQZtMbm61Se2D";
       useDefaultShell = false;
       shell = pkgs.fish;
     };
@@ -142,57 +161,24 @@
       isNormalUser = true;
       group = "server";
       linger = true;
-      initialHashedPassword =
-        "$y$j9T$sQvFPjOrPVeqhHBxvkkl.0$5byFGm57xvjlNPGpX/MNmggXkDiLDnfs0.7.5.EORFD";
+      initialHashedPassword = "$y$j9T$sQvFPjOrPVeqhHBxvkkl.0$5byFGm57xvjlNPGpX/MNmggXkDiLDnfs0.7.5.EORFD";
       home = "/server/staff";
       useDefaultShell = false;
       shell = pkgs.fish;
-      extraGroups = [ "docker" "data" ];
+      extraGroups = [
+        "docker"
+        "data"
+        "server"
+      ];
     };
 
     sholdue = {
       isNormalUser = true;
       group = "users";
-      hashedPassword =
-        "$y$j9T$.G/CUTSO/ncEvjPShnwQw.$eRW8Nk6qPeBk2ntgxbb5tc6X9oo0WvtxHLLm2GN/627";
+      hashedPassword = "$y$j9T$.G/CUTSO/ncEvjPShnwQw.$eRW8Nk6qPeBk2ntgxbb5tc6X9oo0WvtxHLLm2GN/627";
       useDefaultShell = false;
       shell = pkgs.fish;
       extraGroups = [ "docker" ];
-    };
-  };
-
-  systemd.tmpfiles.settings."10-share" = {
-    "/share".d = {
-      user = "root";
-      group = "users";
-      mode = "0751";
-    };
-    "/share/files".d = {
-      user = "share";
-      group = "share";
-      mode = "0777";
-    };
-
-    "/server".d = {
-      user = "root";
-      group = "server";
-      mode = "0750";
-    };
-    "/server/services".d = {
-      user = "servant";
-      group = "server";
-      mode = "775";
-    };
-
-    "/data".d = {
-      user = "root";
-      group = "data";
-      mode = "0770";
-    };
-    "/data/s1".d = {
-      user = "root";
-      group = "data";
-      mode = "0770";
     };
   };
 

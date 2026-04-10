@@ -36,7 +36,7 @@
       age
       ssh-to-age
       sops
-      trashy
+      trash-cli
       p7zip
       vim
       jq
