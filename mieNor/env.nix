@@ -25,14 +25,17 @@
     rootless = {
       enable = true;
       setSocketVariable = true;
-      daemon.settings = {
-        dns = [
-          "1.1.1.1"
-          "8.8.8.8"
-        ];
-        iptables = true;
-      };
+      extraPackages = [ pkgs.passt ];
+      daemon.settings.dns = [
+        "1.1.1.1"
+        "8.8.8.8"
+      ];
     };
+  };
+
+  systemd.user.services.docker.environment = {
+    DOCKERD_ROOTLESS_ROOTLESSKIT_NET = "pasta";
+    DOCKERD_ROOTLESS_ROOTLESSKIT_PORT_DRIVER = "implicit";
   };
 
   environment.shellAliases = { };
