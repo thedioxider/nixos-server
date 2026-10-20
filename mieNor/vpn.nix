@@ -1,6 +1,7 @@
 { pkgs, ... }:
 let
-  watchdogIp = "10.8.1.9";
+  moiNerIp = "10.8.1.4";
+  moiNerHost = "moiNer.internal";
   awgConfigFile = "/etc/secrets/dmnt.conf";
   awgPath = [
     pkgs.unstable.amneziawg-tools
@@ -13,6 +14,9 @@ in
   # Blacklist kernel module — crashes on 6.12.x (jp_spec_applymods page fault)
   # Forces awg-quick to use amneziawg-go userspace implementation instead
   boot.blacklistedKernelModules = [ "amneziawg" ];
+
+  networking.hosts.${moiNerIp} = [ moiNerHost ];
+
   systemd.services.awg-dmnt = {
     description = "AmneziaWG tunnel (userspace) - dmnt";
     after = [ "network-online.target" ];
@@ -48,7 +52,7 @@ in
       STATE_FILE="/var/lib/dmnt-watchdog/failures"
       THRESHOLD=15
 
-      if ping -c 1 -W 10 -I dmnt ${watchdogIp} &>/dev/null; then
+      if ping -c 1 -W 10 -I dmnt ${moiNerHost} &>/dev/null; then
         echo 0 > "$STATE_FILE"
       else
         FAILURES=$(cat "$STATE_FILE" 2>/dev/null || echo 0)
