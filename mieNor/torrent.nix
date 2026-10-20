@@ -1,6 +1,6 @@
-{ pkgs, ... }:
+{ config, lib, pkgs, ... }:
 let
-  stateDir = "/data/var/qbittorrent";
+  downloadsDir = "/data/media/torrents";
 in
 {
   # Settings live in qBittorrent.conf, managed via the web UI.
@@ -8,7 +8,6 @@ in
   services.qbittorrent = {
     enable = true;
     group = "data";
-    profileDir = stateDir;
     webuiPort = 37410;
     torrentingPort = 37030;
   };
@@ -16,21 +15,17 @@ in
   systemd.services.qbittorrent.serviceConfig.UMask = "0027";
 
   systemd.tmpfiles.settings."40-qbittorrent" = {
-    ${stateDir}.d = {
-      user = "qbittorrent";
+    "${lib.removeSuffix "/" config.services.qbittorrent.profileDir}/vuetorrent"."L+".argument =
+      "${pkgs.vuetorrent}/share/vuetorrent";
+    ${downloadsDir}.d = {
+      user = "servant";
       group = "data";
-      mode = "0750";
+      mode = "2770";
     };
-    "${stateDir}/incomplete".d = {
-      user = "qbittorrent";
+    "${downloadsDir}/.incomplete".d = {
+      user = "servant";
       group = "data";
-      mode = "0750";
-    };
-    "${stateDir}/vuetorrent"."L+".argument = "${pkgs.vuetorrent}/share/vuetorrent";
-    "/data/media/torrents".d = {
-      user = "qbittorrent";
-      group = "data";
-      mode = "2750";
+      mode = "2770";
     };
   };
 }
