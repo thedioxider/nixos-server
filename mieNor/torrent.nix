@@ -12,7 +12,11 @@ in
     torrentingPort = 37030;
   };
 
-  systemd.services.qbittorrent.serviceConfig.UMask = "0027";
+  systemd.services.qbittorrent.serviceConfig = {
+    UMask = "0027";
+    Restart = "always";
+    RestartSec = 5;
+  };
 
   systemd.tmpfiles.settings."40-qbittorrent" = {
     "${lib.removeSuffix "/" config.services.qbittorrent.profileDir}/vuetorrent"."L+".argument =
