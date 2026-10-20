@@ -27,6 +27,9 @@
 
     ### File directories
     ./files.nix
+
+    ### Torrent client
+    ./torrent.nix
   ];
 
   ### NixOS special options
