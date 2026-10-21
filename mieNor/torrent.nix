@@ -63,5 +63,6 @@ in
       group = "data";
       mode = "2770";
     };
+    "a+".argument = "d:g:data:rwx,g:data:rwx";
   });
 }
