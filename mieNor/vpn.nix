@@ -1,7 +1,7 @@
 { pkgs, ... }:
 let
-  moiNerIp = "10.8.1.4";
-  moiNerHost = "moiNer.internal";
+  proxyHostIp = "10.8.1.5";
+  proxyHost = "proxy-host.internal";
   awgConfigFile = "/etc/secrets/dmnt.conf";
   awgPath = [
     pkgs.unstable.amneziawg-tools
@@ -15,7 +15,7 @@ in
   # Forces awg-quick to use amneziawg-go userspace implementation instead
   boot.blacklistedKernelModules = [ "amneziawg" ];
 
-  networking.hosts.${moiNerIp} = [ moiNerHost ];
+  networking.hosts.${proxyHostIp} = [ proxyHost ];
 
   systemd.services.awg-dmnt = {
     description = "AmneziaWG tunnel (userspace) - dmnt";
@@ -52,7 +52,7 @@ in
       STATE_FILE="/var/lib/dmnt-watchdog/failures"
       THRESHOLD=15
 
-      if ping -c 1 -W 10 -I dmnt ${moiNerHost} &>/dev/null; then
+      if ping -c 1 -W 10 -I dmnt ${proxyHost} &>/dev/null; then
         echo 0 > "$STATE_FILE"
       else
         FAILURES=$(cat "$STATE_FILE" 2>/dev/null || echo 0)

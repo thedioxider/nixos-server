@@ -1,13 +1,19 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   cfg = config.services.qbittorrent;
   profileDir = lib.removeSuffix "/" cfg.profileDir;
   confFile = "${profileDir}/qBittorrent/config/qBittorrent.conf";
   vuetorrentDir = "${profileDir}/vuetorrent";
   downloadsDir = "/data/media/torrents";
-  moiNerIp = lib.findFirst (
-    ip: lib.elem "moiNer.internal" config.networking.hosts.${ip}
-  ) (throw "moiNer.internal is missing from networking.hosts") (lib.attrNames config.networking.hosts);
+  proxyHostIp =
+    lib.findFirst (ip: lib.elem "proxy-host.internal" config.networking.hosts.${ip})
+      (throw "proxy-host.internal is missing from networking.hosts")
+      (lib.attrNames config.networking.hosts);
 
   # Enforced on every start; everything else stays managed via the web UI.
   # serverConfig is left unset: the module overwrites the whole conf when it's set.
@@ -20,7 +26,7 @@ let
     };
     Preferences = {
       "WebUI\\ReverseProxySupportEnabled" = "true";
-      "WebUI\\TrustedReverseProxiesList" = moiNerIp;
+      "WebUI\\TrustedReverseProxiesList" = proxyHostIp;
       "WebUI\\AlternativeUIEnabled" = "true";
       "WebUI\\RootFolder" = vuetorrentDir;
     };
@@ -42,7 +48,14 @@ in
           section:
           lib.mapAttrsToList (
             key: value:
-            "crudini --ini-options=nospace --set ${lib.escapeShellArgs [ confFile section key value ]}"
+            "crudini --ini-options=nospace --set ${
+              lib.escapeShellArgs [
+                confFile
+                section
+                key
+                value
+              ]
+            }"
           )
         ) pinned
       )
