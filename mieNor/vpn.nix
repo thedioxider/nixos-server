@@ -1,6 +1,6 @@
 { pkgs, ... }:
 let
-  proxyHostIp = "10.8.1.5";
+  proxyHostIp = "10.8.1.2";
   proxyHost = "proxy-host.internal";
   awgConfigFile = "/etc/secrets/dmnt.conf";
   awgPath = [
